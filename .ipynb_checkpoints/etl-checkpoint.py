@@ -6,18 +6,6 @@ from sql_queries import *
 
 
 def process_song_file(cur, filepath):
-    """
-    This procedure processes a song file whose filepath has been provided as an argument.
-    It extracts the song information in order to store it into the songs table.
-    Then it extracts the artist information in order to store it into the artists table.
-
-    INPUTS: 
-    * cur the cursor variable
-    * filepath the file path to the song file
-    
-    Returns:
-      None
-    """    
     # open song file
     df = pd.read_json(filepath, lines=True)
     
@@ -43,19 +31,8 @@ def process_song_file(cur, filepath):
                    float(values['artist_latitude'])] 
     cur.execute(artist_table_insert, artist_data)
 
-def process_log_file(cur, filepath):
-    """
-    This procedure processes a log file whose filepath has been provided as an argument.
-    It extracts the log information in order to store it into the time table.
-    Then it extracts the artist information in order to store it into the artists table.
 
-    INPUTS: 
-    * cur the cursor variable
-    * filepath the file path to the log file
-    
-    Returns:
-      None
-    """    
+def process_log_file(cur, filepath):
     # open log file
     df = pd.read_json(filepath, lines=True)
 
@@ -99,21 +76,8 @@ def process_log_file(cur, filepath):
         songplay_data = (pd.to_datetime(row.ts, unit='ms'), int(row.userId), row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
         cur.execute(songplay_table_insert, songplay_data)
 
-def process_data(cur, conn, filepath, func):
-    """
-    This procedure processes all file whose filepath has been provided as an argument.
-    It extracts the data information in order to store it into the time table.
-    Then it extracts the artist information in order to store it into the artists table.
 
-    INPUTS: 
-    * cur the cursor variable
-    * conn provides connection to the sparkify database
-    * func iterates the cursor in the datafile
-    * filepath the file path to the root file
-    
-    Returns:
-      None
-    """    
+def process_data(cur, conn, filepath, func):
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -131,15 +95,8 @@ def process_data(cur, conn, filepath, func):
         conn.commit()
         print('{}/{} files processed.'.format(i, num_files))
 
+
 def main():
-    """
-    This procedure provides connection to sparkify database to process 
-    all the records in song_data and log_data and close connection when done.
-    
-    Returns:
-      song_data 
-      log_data
-    """    
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
